@@ -1,0 +1,43 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container" max-width ="90%">
+  <div class="row">
+    <div class="col-9">My Address: </div>  
+    <div class="col-4"><br>
+      <form class="row g-3 needs-validation" novalidate>
+        <div class="col-md-4">
+          <form method = "POST">
+            {% csrf_token %}
+            {{ address_form.as_p }}
+            <button type="submit">My Address</button>
+          </form>
+        </div>
+      </form>
+    </div>
+    <div class="col-6"><br><table class="table caption-top">
+      <caption>Your Cart:</caption>
+      <thead class="table-dark">
+        <tr>
+          <th scope="col"></th>
+          <th scope="col">Product</th>
+          <th scope="col">Quantity</th>
+          <th scope="col">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order_item in order_items %}
+        <tr>
+          <th scope="row"><img src="{{order_item.product.imageUrl}}" width="100" alt="{{order_item.product.name}}"></th>
+          <td>{{order_item.product.name}}</td>
+          <td>{{order_item.quantity}}</td>
+          <td>{{order_item.total_price_item}}</td>
+          <td> </div>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+  </div>
+</div>
+{% endblock content %}

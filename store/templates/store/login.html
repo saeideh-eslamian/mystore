@@ -1,0 +1,28 @@
+{%extends "store/main.html"%}
+{%load static %}
+
+{% block title %}Login{% endblock title %}
+
+{%block content%}
+<section style="display:block; margin:auto; padding: 1%; max-width:90% ;width:60% ; border: 2px groove #bbb;">
+<form method="POST" >
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="exampleInputEmail1" class="form-label">Email address</label>
+      <input type="email" name="email" >
+    </div>
+    <div class="mb-3">
+      <label for="exampleInputPassword1" class="form-label">Password</label>
+      <input type="password" name="password" >
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+
+    {%if not is_login%}
+     <p style="font-size:bold; color:red;">{{error_message}}</p>
+    {% endif %} 
+</form>
+  <p><a href="{%url "register"%}">Register Now</a></p>
+  <p><a href="#">Forget MyPassword</a></p>
+</section>
+
+  {%endblock content%}

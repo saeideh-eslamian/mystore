@@ -1,0 +1,56 @@
+{% extends 'store/main.html' %}
+{% load static %}
+
+{% block title  %}My Cart{% endblock title  %}
+
+{% block content  %}
+
+ <p style = "width:70%; margin:auto;"> <span style="float: right;padding:10px"><a href="{%url "store"%}">Add to cart</a></span></p>
+ <br>
+ <section style ="width:70%; margin:auto;">
+ <table class="table caption-top">
+    <thead class="table-dark">
+      <tr>
+        <th scope="col">Total: $ {{ order.total_price }} </th>
+        <th scope="col"><a href="{%url "payment"%}">Payment</a></th>
+      </tr>
+    </thead>
+    <tbody>      
+  </table>
+</section>
+<br>
+<section style ="width:90%; margin:auto;">    
+<table class="table caption-top">
+    <caption>Your Cart:</caption>
+    <thead class="table-dark">
+      <tr>
+        <th scope="col"></th>
+        <th scope="col">Product</th>
+        <th scope="col">Price</th>
+        <th scope="col">Quantity</th>
+        <th scope="col">Total</th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for order_item in order_items %}
+      <tr>
+        <th scope="row"><img src="{{order_item.product.imageUrl}}" width="100" alt="{{order_item.product.name}}"></th>
+        <td>{{order_item.product.name}}</td>
+        <td>{{order_item.product.price}}</td>
+        <td>{{order_item.quantity}}</td>
+        <td>{{order_item.total_price_item}}</td>
+        <td> 
+          <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="product_id" value = "{{order_item.id}}">
+            <span ><button type="submit" name="change_quantity" value="minus">- &#x2193;</button> </span>  
+            <span><button type="submit" name="change_quantity" value="plus">+ &#x2191;</button></span>
+          </form>
+         </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock content  %}

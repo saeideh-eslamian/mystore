@@ -1,0 +1,25 @@
+{% extends 'store/main.html' %}
+{% load static %}
+
+{% block title %}MyStore{% endblock title %}
+
+{% block content %}
+<div class="container text-left">
+    <div class="row g-2">
+        {% for product in products %}
+        <div class="col-lg-4"><div class="card" style="width: 18rem;">
+            <a href="{% url "product" product.id %}"><img src="{{product.imageUrl}}" class="card-img-top" alt="...">
+            <div class="card-body">
+              <h5 class="card-title">{{product.name}}</h5></a>
+              <p class="card-text">{{product.descriptin}}</p>
+              <p class="card-price">Price: ${{product.price}}</p>
+              <form action="" method="POST">
+              {% csrf_token %}
+              <input type="hidden" value ="{{product.id}}" name="product_id">
+              <button type="submit" href="" class="btn btn-primary">Add To Cart</button>
+            </form>
+            </div>
+          </div></div>
+          {% endfor %}
+    </div>
+{% endblock content %}

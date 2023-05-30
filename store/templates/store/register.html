@@ -1,0 +1,34 @@
+{%extends "store/main.html"%}
+{%load static %}
+
+{% block title %}Register{% endblock title %}
+
+{%block content%}
+<section style="display:block; margin:auto; padding: 1%; max-width:90% ;width:60% ; border: 2px groove #bbb;">
+<form method="POST">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="exampleInputText1" class="form-label">First Name</label>
+      <p>{{form.first_name}}</p>
+    </div>
+    <div class="mb-3">
+      <label for="exampleInputText1" class="form-label">Last Name</label>
+      <p>{{form.last_name}}</p>
+    </div>
+    <div class="mb-3">
+      <label for="exampleInputEmail1" class="form-label">Email address</label>
+      <p>{{form.email}}</p>
+    </div>
+    <div class="mb-3">
+      <label for="exampleInputPassword1" class="form-label">Password</label>
+      <p>{{form.password}}</p>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+    {%if not is_register%}
+     <p style="font-size:bold; color:red;">{{error_message}}</p>
+    {% endif %}  
+  </form>
+  <p><a href="{%url "login"%}">Login Now</a></p>
+  </section>
+
+  {%endblock content%}
