@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404, redirect, get_list_or_404
 from . models import *
 from django.contrib.auth import login, authenticate, logout
 from .forms import RegisterForm, ShippingAddressForm
@@ -71,54 +71,102 @@ def cart(request):
     }        
     return render(request, "store/cart.html", context)
      
-
 def payment_page(request):
 
     if request.user.is_authenticated:
         customer = request.user.customer
         order, created = Order.objects.get_or_create(customer=customer)
         order_items = order.orderitem_set.all()
-        shippin_address , created = ShippinAddress.objects.get_or_create(customer=customer)
-
-        is_address = False
-        if created:
-            print("yessssssssssssssssss")
-            is_address == True
-            context = {
-            "order_items" : order_items,
-            "order" : order,
-            "shippin_address": shippin_address,
-            }
-
+        is_saved_customer = False
+        if ShippinAddress.objects.filter(customer=customer).exists():
+            saved_customer_address =ShippinAddress.objects.filter(customer=customer)
+            is_saved_customer = True
         else:
-            print("nooooooooooooooo")
-            is_address == False
-            if request.method == "POST":
+            is_saved_customer = False
+            saved_customer_address = ""
+
+        if request.method == 'POST':
+            if "addressform_submit" in request.POST:
                 address_form = ShippingAddressForm(request.POST)
                 if address_form.is_valid():
-                    address_form.save()
+                    is_created_address = False
+                    if ShippinAddress.objects.filter(customer=customer,
+                        address=address_form.cleaned_data['address'],
+                        city=address_form.cleaned_data['city'],
+                        state=address_form.cleaned_data['state'],
+                        zipcode=address_form.cleaned_data['zipcode'],
+                        phone_number=address_form.cleaned_data['phone_number']).exists():
+
+                        is_created_address = True
+                        massage = "This address already exist"
+                    if not is_created_address:
+                        address =ShippinAddress.objects.create(
+                            customer=customer,
+                            address=address_form.cleaned_data['address'],
+                            city=address_form.cleaned_data['city'],
+                            state=address_form.cleaned_data['state'],
+                            zipcode=address_form.cleaned_data['zipcode'],
+                            phone_number=address_form.cleaned_data['phone_number'],
+                            )
+                        order.shipping_address = address
+                        
+                        massage = "your address saved successful"
+                        return redirect("payment")
                 else:
-                     address_form = ShippingAddressForm()   
+                        address_form = ShippingAddressForm(request.POST)
+                        massage = "Please inter valid information"  
                 context = {
                 "order_items" : order_items,
                 "order" : order,
                 "address_form": address_form,
+                "massage": massage,
+                "saved_customer_address": saved_customer_address,
+                "is_saved_customer": is_saved_customer,
                 } 
-            else:
-                address_form = ShippingAddressForm()
-                context = {
-                "order_items" : order_items,
-                "order" : order,
-                "address_form": address_form,
-                } 
+                return render(request, "store/payment.html",context)
+            
+            elif "select_address_submit" in request.POST:
+                select_address = request.POST.get("select_address")
+                selected_address = ShippinAddress.objects.get(address=select_address)
+                data = {
+                'address': selected_address.address,
+                'city': selected_address.city,
+                'phone_number':selected_address.phone_number,
+                'zipcode': selected_address.zipcode,
+                'state': selected_address.state,
+                'customer': selected_address.customer,
+                     }
                 
-               
+                fill_form_by_select_address = ShippingAddressForm(initial=data)
+                
+                context = {
+                "order_items" : order_items,
+                "order" : order,
+                "address_form": fill_form_by_select_address,
+                "saved_customer_address": saved_customer_address,
+                "is_saved_customer": is_saved_customer,
+                } 
+                return render(request, "store/payment.html",context)
+
+
+
+            
+        address_form = ShippingAddressForm()
+        context = {
+        "order_items" : order_items,
+        "order" : order,
+        "address_form": address_form,
+        "saved_customer_address": saved_customer_address,
+        "is_saved_customer": is_saved_customer,
+        } 
+        return render(request, "store/payment.html",context)
+
+
     else:
         context = {}
         return redirect("login")
     
-    
-    return render(request, "store/payment.html",context)   
+       
 
 def login_view(request):
 

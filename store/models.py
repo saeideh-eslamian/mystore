@@ -37,12 +37,12 @@ class Product(models.Model):
         return url        
     
 class ShippinAddress(models.Model):
-    address = models.CharField(max_length=200)
-    phone_number = models.IntegerField(null=True, blank=True)
-    zipcode = models.IntegerField(null=True, blank=True)
-    state = models.CharField(max_length=30,null=True, blank=True)
-    city = models.CharField(max_length=30,null=True, blank=True)
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)   
+    address = models.CharField(max_length=200, default="")
+    phone_number = models.IntegerField(default="")
+    zipcode = models.IntegerField(default="")
+    state = models.CharField(max_length=30,null=True,blank=True)
+    city = models.CharField(max_length=30,default="")
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, null=True)   
 
     def __str__(self):
         return self.address 
@@ -52,7 +52,7 @@ class Order(models.Model):
     customer = models.ForeignKey(Customer,null=True,blank=False,
                                   on_delete=models.SET_NULL)
     date_order = models.DateTimeField(auto_now_add=True)
-    shipping_address = models.ForeignKey(ShippinAddress, null=True,
+    shipping_address = models.ForeignKey(ShippinAddress, null=True, blank=True,
                                           on_delete=models.SET_NULL)
     
     def __str__(self):

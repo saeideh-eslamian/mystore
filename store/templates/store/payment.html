@@ -1,43 +1,60 @@
 {% extends 'store/main.html' %}
 {% load static %}
-{% block content %}
 
-<div class="container" max-width ="90%">
-  <div class="row">
-    <div class="col-9">My Address: </div>  
-    <div class="col-4"><br>
-      <form class="row g-3 needs-validation" novalidate>
-        <div class="col-md-4">
-          <form method = "POST">
+{% block content %}
+  <div class="container" max-width ="90%">
+    <div class="row">
+      <div class="col-9"> 
+        {% if is_saved_customer %}
+         Select your address
+          <form method="POST" id="select_address" >
             {% csrf_token %}
-            {{ address_form.as_p }}
-            <button type="submit">My Address</button>
+            <select name="select_address" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
+              {% for address in  saved_customer_address %}
+                <option value="{{address}}" >
+                  {{address.city}} - {{address.address|slice:":25"}}...</option>
+              {% endfor %}
+            </select>
+            <button type="submit" name="select_address_submit">Send For this address</button>
           </form>
-        </div>
-      </form>
-    </div>
-    <div class="col-6"><br><table class="table caption-top">
-      <caption>Your Cart:</caption>
-      <thead class="table-dark">
-        <tr>
-          <th scope="col"></th>
-          <th scope="col">Product</th>
-          <th scope="col">Quantity</th>
-          <th scope="col">Total</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for order_item in order_items %}
-        <tr>
-          <th scope="row"><img src="{{order_item.product.imageUrl}}" width="100" alt="{{order_item.product.name}}"></th>
-          <td>{{order_item.product.name}}</td>
-          <td>{{order_item.quantity}}</td>
-          <td>{{order_item.total_price_item}}</td>
-          <td> </div>
-          </tr>
+        {%else%}
+         <p>Please inter your address</p> 
+        {% endif %}
+      </div>  
+      <div class="col-4"><br>
+        <form method="POST" action="{%url "payment"%} id="addressform">
+          {% csrf_token %}
+          {% for feild in address_form %}
+           <p>{{feild.label}}</p>
+           <p>{{feild}}</p>
+           <p>{{feild.errors}}</p>
           {% endfor %}
-        </tbody>
-      </table>
+          <button type="submit" name="addressform_submit">Continue Payment</button>
+        </form>
+        <p>{{massage}}</p>
+      </div>
+      <div class="col-6"><br><table class="table caption-top">
+        <caption>Your Cart:</caption>
+        <thead class="table-dark">
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">Product</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order_item in order_items %}
+          <tr>
+            <th scope="row"><img src="{{order_item.product.imageUrl}}" width="100" alt="{{order_item.product.name}}"></th>
+            <td>{{order_item.product.name}}</td>
+            <td>{{order_item.quantity}}</td>
+            <td>{{order_item.total_price_item}}</td>
+            <td> </div>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+    </div>
   </div>
-</div>
 {% endblock content %}
