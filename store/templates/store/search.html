@@ -1,0 +1,34 @@
+{% extends 'store/main.html' %}
+{% load static %}
+
+{% block title %}MyStore{% endblock title %}
+
+{% block search %}
+<form class="d-flex" role="search" method="POST">
+  {%csrf_token%}
+  <input class="form-control me-2" type="search" placeholder="Search" name="search" aria-label="Search">
+  <button class="btn btn-outline-success" type="submit" name="submit_search">Search</button>
+</form>
+{% endblock search %}
+
+{% block content %}
+  <div class="container text-left">
+    <div class="row g-2">
+      {% for item in search_result  %}
+        <div class="col-lg-4"><div class="card" style="width: 18rem;">
+          <a href="{% url "product" item.id %}"><img src="{{item.imageUrl}}" class="card-img-top" alt="...">
+          <div class="card-body">
+            <h5 class="card-title">{{item.name}}</h5></a>
+            <p class="card-text">{{item.descriptin}}</p>
+            <p class="card-price">Price: ${{item.price}}</p>
+            <form action="" method="POST">
+            {% csrf_token %}
+            <input type="hidden" value ="{{item.id}}" name="product_id">
+            <button type="submit" class="btn btn-primary" name="add_to_cart_submit">Add To Cart</button>
+          </form>
+          </div>
+        </div></div>
+      {% endfor %}
+    </div> 
+  </div>      
+{% endblock content %}

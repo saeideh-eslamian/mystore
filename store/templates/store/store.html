@@ -3,6 +3,14 @@
 
 {% block title %}MyStore{% endblock title %}
 
+{% block search %}
+<form class="d-flex" role="search" method="POST">
+  {%csrf_token%}
+  <input class="form-control me-2" type="search" placeholder="Search" name="search" aria-label="Search">
+  <button class="btn btn-outline-success" type="submit" name="submit_search">Search</button>
+</form>
+{% endblock search %}
+
 {% block content %}
 <div class="container text-left">
     <div class="row g-2">
@@ -16,7 +24,7 @@
               <form action="" method="POST">
               {% csrf_token %}
               <input type="hidden" value ="{{product.id}}" name="product_id">
-              <button type="submit" class="btn btn-primary">Add To Cart</button>
+              <button type="submit" class="btn btn-primary" name="add_to_cart_submit">Add To Cart</button>
             </form>
             </div>
           </div></div>

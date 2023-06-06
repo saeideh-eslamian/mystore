@@ -2,28 +2,37 @@ from django.shortcuts import render, get_object_or_404, redirect, get_list_or_40
 from . models import *
 from django.contrib.auth import login, authenticate, logout
 from .forms import RegisterForm, ShippingAddressForm
+from django.db.models import Q
 
 
 def store(request):
     products = Product.objects.all().order_by('-update_date')
 
     if request.method == "POST": 
-        if request.user.is_authenticated:   
-            customer= request.user.customer
-            order, created = Order.objects.get_or_create(customer=customer)
-            order_items = order.orderitem_set.all()
-            product_id = request.POST['product_id']
-            product = Product.objects.get(id = product_id)
-            if order_items.filter(product=product, order=order).exists():
-                order_item = OrderItem.objects.get(product=product, order=order)
-                order_item.quantity += 1
-                order_item.save()
-            else:
-                order_item = OrderItem.objects.create(product=product, quantity=1, order = order)           
+        if "add_to_cart_submit" in request.POST:
+            if request.user.is_authenticated:   
+                customer= request.user.customer
+                order, created = Order.objects.get_or_create(customer=customer)
+                order_items = order.orderitem_set.all()
+                product_id = request.POST['product_id']
+                product = Product.objects.get(id = product_id)
+                if order_items.filter(product=product, order=order).exists():
+                    order_item = OrderItem.objects.get(product=product, order=order)
+                    order_item.quantity += 1
+                    order_item.save()
+                else:
+                    order_item = OrderItem.objects.create(product=product, quantity=1, order = order)           
 
-                return redirect(request.path)
-        else:
-          return redirect("login")    
+                    return redirect(request.path)
+            else:
+                return redirect("login")    
+        elif "submit_search" in request.POST:
+            search = request.POST["search"]
+            search_result = Product.objects.filter(
+                Q(name__icontains=search) | Q(descriptin__icontains=search)
+                ).order_by("update_date")
+            return render(request,"store/search.html",{"search_result":search_result})
+
 
     context = {
         "products" : products,
