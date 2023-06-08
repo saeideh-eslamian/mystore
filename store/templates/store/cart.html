@@ -33,14 +33,14 @@
       </tr>
     </thead>
     <tbody>
-      {% for order_item in order_items %}
-      <tr>
-        <th scope="row"><img src="{{order_item.product.imageUrl}}" width="100" alt="{{order_item.product.name}}"></th>
-        <td>{{order_item.product.name}}</td>
-        <td>{{order_item.product.price}}</td>
-        <td>{{order_item.quantity}}</td>
-        <td>{{order_item.total_price_item}}</td>
-        <td> 
+        {%   for order_item in order_items %}
+        <tr>
+          <th scope="row"><img src="{{order_item.product.imageUrl}}" width="100" alt="{{order_item.product.name}}"></th>
+          <td>{{order_item.product.name}}</td>
+          <td>{{order_item.product.price}}</td>
+          <td>{{order_item.quantity}}</td>
+          <td>{{order_item.total_price_item}}</td>
+          <td> 
           <form method="POST">
             {% csrf_token %}
             <input type="hidden" name="product_id" value = "{{order_item.id}}">
@@ -48,8 +48,8 @@
             <span><button type="submit" name="change_quantity" value="plus">+ &#x2191;</button></span>
           </form>
          </td>
-      </tr>
-      {% endfor %}
+        </tr>
+        {% endfor %} 
     </tbody>
   </table>
 </section>
