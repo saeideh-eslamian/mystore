@@ -1,8 +1,9 @@
-from django.shortcuts import render, get_object_or_404, redirect, get_list_or_404
+from django.shortcuts import render, get_object_or_404, redirect, HttpResponse
 from . models import *
 from django.contrib.auth import login, authenticate, logout
 from .forms import RegisterForm, ShippingAddressForm
 from django.db.models import Q
+from django.db import IntegrityError
 
 
 def store(request):
@@ -69,13 +70,24 @@ def cart(request):
         order, created = Order.objects.get_or_create(customer=customer)
         order_items = order.orderitem_set.all()
         is_user_login = True
+        if request.method == "POST":
+            id_product = request.POST["product_id"] 
+            order_item = order_items.get(id = id_product)
+            if request.POST["change_quantity"] == "minus":
+                if order_item.quantity > 1:
+                    order_item.quantity -= 1
+                    order_item.save()
+                else:
+                    order_item.delete()
+            elif request.POST["change_quantity"] == "plus":
+                    order_item.quantity += 1
+                    order_item.save()
 
     else:
         cart = request.session.get('cart', {}) 
         is_user_login = False
         items = []
         order = {'total_price':0}
-        total_price = 0
         for product_id, quantity in cart.items() :
             product = Product.objects.get(id = product_id)
             total =quantity*product.price
@@ -93,14 +105,35 @@ def cart(request):
 				'total_price_item':total,
             }
             items.append(item)
-        order_items = items
+            order_items = items
+            print(items)
+        if request.method=="POST":
+            product_id = request.POST["product_id"]
+            print("______iiiiiiiiiiiiiiiiiiiiiiiiiii")
+            print(product_id)
+            cart = request.session.get('cart', {})
+            if request.POST["change_quantity"] == "minus":
+                if cart.get(product_id, 0) > 1:
+                    cart[product_id] -= 1
+                    request.session['cart'] = cart
+                    return redirect('cart')
+                else:
+                    del cart[product_id]
+                    request.session.modified = True
+                    return redirect('cart')
+            elif request.POST["change_quantity"] == "plus":
+                cart[product_id] = cart.get(product_id, 0) + 1
+                request.session['cart'] = cart
+                return redirect('cart')
 
     context = {
         "order_items" : order_items,
         "order" : order,
         "is_user_login" : is_user_login,
-    }        
-    return render(request, "store/cart.html", context)
+    }  
+    
+    return render(request, "store/cart.html", context)      
+    
      
 def payment_page(request):
 

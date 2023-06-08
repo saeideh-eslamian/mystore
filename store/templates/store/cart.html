@@ -33,7 +33,7 @@
       </tr>
     </thead>
     <tbody>
-        {% for order_item in order_items %}
+        {%   for order_item in order_items %}
         <tr>
           <th scope="row"><img src="{{order_item.product.imageUrl}}" width="100" alt="{{order_item.product.name}}"></th>
           <td>{{order_item.product.name}}</td>
@@ -48,8 +48,8 @@
             <span><button type="submit" name="change_quantity" value="plus">+ &#x2191;</button></span>
           </form>
          </td>
-      </tr>
-      {% endfor %} 
+        </tr>
+        {% endfor %} 
     </tbody>
   </table>
 </section>
