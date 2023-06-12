@@ -109,8 +109,6 @@ def cart(request):
             print(items)
         if request.method=="POST":
             product_id = request.POST["product_id"]
-            print("______iiiiiiiiiiiiiiiiiiiiiiiiiii")
-            print(product_id)
             cart = request.session.get('cart', {})
             if request.POST["change_quantity"] == "minus":
                 if cart.get(product_id, 0) > 1:
