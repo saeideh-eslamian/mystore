@@ -10,7 +10,7 @@ class Customer(models.Model):
 class Comment(models.Model):
     comment_text = models.TextField(blank=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE) 
-    comment_date = models.DateTimeField(auto_now_add=True) 
+    comment_date = models.DateTimeField(null=True,auto_now_add=True) 
 
     def __str__(self):
         return f"{self.user.username}  {self.comment_date}"
@@ -38,8 +38,8 @@ class Product(models.Model):
     
 class ShippinAddress(models.Model):
     address = models.CharField(max_length=200, default="")
-    phone_number = models.IntegerField(default="")
-    zipcode = models.IntegerField(default="")
+    phone_number = models.IntegerField(default=0)
+    zipcode = models.IntegerField(default=0)
     state = models.CharField(max_length=30,null=True,blank=True)
     city = models.CharField(max_length=30,default="")
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, null=True)   
@@ -56,7 +56,7 @@ class Order(models.Model):
                                           on_delete=models.SET_NULL)
     
     def __str__(self):
-        return f"{self.customer.user.username}  {self.order_date}"
+        return f"{self.customer} : {self.date_order}"
 
 
     @property
@@ -72,7 +72,7 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    product = models.OneToOneField(Product,null=True, blank=False,
+    product = models.ForeignKey(Product,null=True, blank=False,
                                     on_delete=models.SET_NULL)
     quantity = models.IntegerField()
 

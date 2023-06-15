@@ -3,26 +3,35 @@ from . models import *
 from django.contrib.auth import login, authenticate, logout
 from .forms import RegisterForm, ShippingAddressForm
 from django.db.models import Q
-from django.db import IntegrityError
 
 
 def store(request):
     products = Product.objects.all().order_by('-update_date')
 
-    if request.method == "POST": 
+    if request.method == "POST":
+        print("11111111111111111111") 
         if "add_to_cart_submit" in request.POST:
+            print("33333333333333333333333333")
             if request.user.is_authenticated:   
+                print("444444444444444444444")
                 customer= request.user.customer
                 order, created = Order.objects.get_or_create(customer=customer)
                 order_items = order.orderitem_set.all()
                 product_id = request.POST['product_id']
                 product = Product.objects.get(id = product_id)
+                print("2222222222222222222")
+                print(product)
                 if order_items.filter(product=product, order=order).exists():
                     order_item = OrderItem.objects.get(product=product, order=order)
                     order_item.quantity += 1
                     order_item.save()
                 else:
-                    order_item = OrderItem.objects.create(product=product, quantity=1, order = order)           
+                    print("55555555555555555555555")
+                    print(product)
+                    print(product.id)
+                    print(order)
+                    order_item = OrderItem.objects.create(product=product, quantity=1, order=order)   
+                    print("66666666666666666666666")        
 
                     return redirect(request.path)
             else:
@@ -30,14 +39,7 @@ def store(request):
                 product = Product.objects.get(id = product_id)
                 request.session["product_id"] = product_id
                 cart = request.session.get('cart', {})
-                cart[product_id] = cart.get(product_id,0)+1
-                # product = Product.objects.get(id = product_id)
-                # if order_items.filter(product=product).exists():
-                #     order_item = OrderItem.objects.get(product=product, order=order)
-                #     order_item.quantity += 1
-                #     order_item.save()
-                # else:
-                #     order_item = OrderItem.objects.create(product=product, quantity=1) 
+                cart[product_id] = cart.get(product_id,0)+1 
                 request.session['cart']= cart
                 return redirect(request.path)  
               
@@ -285,7 +287,7 @@ def register_view(request):
                 user.set_password(password)
                 user.save()
                 Customer.objects.create(user=user)
-                return redirect("store")
+                return redirect("login")
   
     else:       
         form = RegisterForm()
