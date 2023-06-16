@@ -8,30 +8,21 @@ from django.db.models import Q
 def store(request):
     products = Product.objects.all().order_by('-update_date')
 
-    if request.method == "POST":
-        print("11111111111111111111") 
+    if request.method == "POST": 
         if "add_to_cart_submit" in request.POST:
-            print("33333333333333333333333333")
             if request.user.is_authenticated:   
-                print("444444444444444444444")
                 customer= request.user.customer
                 order, created = Order.objects.get_or_create(customer=customer)
                 order_items = order.orderitem_set.all()
                 product_id = request.POST['product_id']
                 product = Product.objects.get(id = product_id)
-                print("2222222222222222222")
                 print(product)
                 if order_items.filter(product=product, order=order).exists():
                     order_item = OrderItem.objects.get(product=product, order=order)
                     order_item.quantity += 1
                     order_item.save()
                 else:
-                    print("55555555555555555555555")
-                    print(product)
-                    print(product.id)
-                    print(order)
-                    order_item = OrderItem.objects.create(product=product, quantity=1, order=order)   
-                    print("66666666666666666666666")        
+                    order_item = OrderItem.objects.create(product=product, quantity=1, order=order)           
 
                     return redirect(request.path)
             else:
